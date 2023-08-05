@@ -1,3 +1,5 @@
+//Start of legendary app
+
 package com.example.kabans
 
 import android.content.Intent
