@@ -5,15 +5,15 @@ package com.example.kabans
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import com.bumptech.glide.Glide
 import com.example.kabans.databinding.ActivityMainBinding
 import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         bindClass = ActivityMainBinding.inflate(layoutInflater)
         setContentView(bindClass.root)
 
+        lateinit var presentImageView: ImageView
+        val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
         val gift = bindClass.giftImage
         val photo = bindClass.kabanImage
         val getKaban = bindClass.getKabanText
@@ -46,6 +48,13 @@ class MainActivity : AppCompatActivity() {
         val legendary = Rarity(Constants.legendaryProb, "legendary")
 
         val rarities = listOf(common, rare, epic, legendary)
+
+        presentImageView = findViewById(R.id.giftImage)
+
+        val configSettings = FirebaseRemoteConfigSettings.Builder()
+            .setMinimumFetchIntervalInSeconds(60) // Fetch at most once every hour
+            .build()
+        firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
 
         fun getRarity() : String {
             var cumulativeProbability = 0.0
@@ -93,7 +102,7 @@ class MainActivity : AppCompatActivity() {
 //        val epicImagesAmount = readDataRarity("epic")
 //        val legendaryImagesAmount = readDataRarity("legendary")
 
-        val commonImagesAmount = getImageWithRarity("common")
+        val commonImagesAmount = firebaseRemoteConfig.getString("common_count")
         val rareImagesAmount = getImageWithRarity("rare")
         val epicImagesAmount = getImageWithRarity("epic")
         val legendaryImagesAmount = getImageWithRarity("legendary")
@@ -103,14 +112,12 @@ class MainActivity : AppCompatActivity() {
             val rarity = getRarity()
             when (rarity) {
                 "common" -> {
-                    val randNumber = (1..commonImagesAmount).random()
-                    val drawableName = rarity + "_" + randNumber.toString()
-                    image = this.getResources().getIdentifier(drawableName,
-                                        "drawable", this.getPackageName());
+                    val randNumber = (1..commonImagesAmount.toInt()).random()
+                    val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
+                    Glide.with(this)
+                        .load(cardUrl)
+                        .into(photo)
                     commonCounter += 1
-                    var test = readDataRarity("common")
-                    text = "Вы получили обычную карту. Всего карт $test обычных, $rareImagesAmount редких" +
-                            "$epicImagesAmount эпичных и $legendaryImagesAmount легендарных"
                 }
                 "rare" -> {
                     val randNumber = (1..rareImagesAmount).random()
@@ -165,38 +172,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-    }
-
-
-    fun readDataRarity(rarity: String): Int {
-        val database = Firebase.database.reference
-        val ref = database.child("count")
-
-        Log.d("Debugging", "$ref")
-        var rarity_counts: Int = -1
-
-        val valueEventListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Обработка считанных данных здесь
-                val value = dataSnapshot.child(rarity).getValue(Int::class.java)
-                println(value)
-                println(dataSnapshot)
-                rarity_counts = value ?: -1
-                Log.d("Debugging", "value: $value")
-                Log.d("Debugging", "dataSnapshot: $dataSnapshot")
-                Log.d("Debugging", "rarity_counts: $rarity_counts")
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Обработка ошибки чтения данных здесь
-                println("Ошибка чтения данных из базы данных: ${databaseError.message}")
-                Log.d("Debugging", "loadPost:onCancelled", databaseError.toException())
-            }
-        }
-
-        ref.addListenerForSingleValueEvent(valueEventListener)
-
-        return rarity_counts
     }
 
 }
