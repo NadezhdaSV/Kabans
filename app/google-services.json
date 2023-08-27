@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "120247831734",
+    "firebase_url": "https://kabans-2473f-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "kabans-2473f",
+    "storage_bucket": "kabans-2473f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120247831734:android:bd27a26a03a20556fa2a17",
+        "android_client_info": {
+          "package_name": "com.example.kabans"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120247831734-011vt058d8mql3td7cvqt6g8rm9j0ldb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-xQwmFBM4VCeXLxsHlDr5HoM4vm0i5cQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120247831734-011vt058d8mql3td7cvqt6g8rm9j0ldb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
