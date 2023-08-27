@@ -28,14 +28,12 @@ class MainActivity : AppCompatActivity() {
         bindClass = ActivityMainBinding.inflate(layoutInflater)
         setContentView(bindClass.root)
 
-        lateinit var presentImageView: ImageView
         val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
         val gift = bindClass.giftImage
         val photo = bindClass.kabanImage
         val getKaban = bindClass.getKabanText
         val resultKaban = bindClass.resultKabanText
         val statsButton = bindClass.statsButton
-        var image = 0
         var text = ""
         var commonCounter = 0
         var rareCounter = 0
@@ -49,10 +47,9 @@ class MainActivity : AppCompatActivity() {
 
         val rarities = listOf(common, rare, epic, legendary)
 
-        presentImageView = findViewById(R.id.giftImage)
 
         val configSettings = FirebaseRemoteConfigSettings.Builder()
-            .setMinimumFetchIntervalInSeconds(60) // Fetch at most once every hour
+            .setMinimumFetchIntervalInSeconds(2) // Fetch at most once every hour
             .build()
         firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
 
@@ -107,71 +104,83 @@ class MainActivity : AppCompatActivity() {
         val epicImagesAmount = getImageWithRarity("epic")
         val legendaryImagesAmount = getImageWithRarity("legendary")
 
-        gift.setOnClickListener{
+        firebaseRemoteConfig.fetchAndActivate()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    gift.setOnClickListener {
 
-            val rarity = getRarity()
-            when (rarity) {
-                "common" -> {
-                    val randNumber = (1..commonImagesAmount.toInt()).random()
-                    val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
-                    Glide.with(this)
-                        .load(cardUrl)
-                        .into(photo)
-                    commonCounter += 1
-                }
-                "rare" -> {
-                    val randNumber = (1..rareImagesAmount).random()
-                    val drawableName = rarity + "_" + randNumber.toString()
-                    image = this.getResources().getIdentifier(drawableName,
-                                        "drawable", this.getPackageName());
-                    rareCounter += 1
-                    text = "Вы получили редкую карту!"
-                }
-                "epic" -> {
-                    val randNumber = (1..epicImagesAmount).random()
-                    val drawableName = rarity + "_" + randNumber.toString()
-                    image = this.getResources().getIdentifier(drawableName,
-                                        "drawable", this.getPackageName());
-                    epicCounter += 1
-                    text = "Вы получили эпическую карту!!!"
-                }
-                "legendary" -> {
-                    val randNumber = (1..legendaryImagesAmount).random()
-                    val drawableName = rarity + "_" + randNumber.toString()
-                    image = this.getResources().getIdentifier(drawableName,
-                                        "drawable", this.getPackageName());
-                    legendaryCounter += 1
-                    text = "Вы получили ЛЕГЕНДАРНУЮ карту!!!"
-                }
-            }
+                        val rarity = getRarity()
+                        when (rarity) {
+                            "common" -> {
+                                val randNumber = (1..13).random()
+                                val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
+                                Glide.with(this)
+                                    .load(cardUrl)
+                                    .into(photo)
+                                commonCounter += 1
+                                text = "Вы получили обычную карту!"
+                            }
 
-            photo.setImageResource(image)
-            gift.visibility = View.INVISIBLE
-            getKaban.visibility = View.INVISIBLE
-            statsButton.visibility = View.INVISIBLE
-            photo.visibility = View.VISIBLE
-            resultKaban.text = text
-            resultKaban.visibility = View.VISIBLE
+                            "rare" -> {
+                                val randNumber = (1..13).random()
+                                val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
+                                Glide.with(this)
+                                    .load(cardUrl)
+                                    .into(photo)
+                                commonCounter += 1
+                                text = "Вы получили обычную карту!"
+                            }
+
+                            "epic" -> {
+                                val randNumber = (1..13).random()
+                                val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
+                                Glide.with(this)
+                                    .load(cardUrl)
+                                    .into(photo)
+                                commonCounter += 1
+                                text = "Вы получили обычную карту!"
+                            }
+
+                            "legendary" -> {
+                                val randNumber = (1..13).random()
+                                val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
+                                Glide.with(this)
+                                    .load(cardUrl)
+                                    .into(photo)
+                                commonCounter += 1
+                                text = "Вы получили обычную карту!"
+                            }
+                        }
+
+
+                        gift.visibility = View.INVISIBLE
+                        getKaban.visibility = View.INVISIBLE
+                        statsButton.visibility = View.INVISIBLE
+                        photo.visibility = View.VISIBLE
+                        resultKaban.text = text
+                        resultKaban.visibility = View.VISIBLE
+                    }
+
+                    photo.setOnClickListener {
+                        photo.visibility = View.INVISIBLE
+                        resultKaban.visibility = View.INVISIBLE
+                        gift.visibility = View.VISIBLE
+                        getKaban.visibility = View.VISIBLE
+                        statsButton.visibility = View.VISIBLE
+                    }
+
+                    statsButton.setOnClickListener {
+                        val intent = Intent(this, popupStatistics::class.java)
+                        intent.putExtra("popuptitle", "Статистика")
+                        intent.putExtra(
+                            "popuptext", "Ваша статистика:\nОбычных карт: ${commonCounter}" +
+                                    "\nРедких : ${rareCounter}\nЭпичных карт: ${epicCounter}\n" +
+                                    "ЛЕГЕНДАРНЫХ карт: ${legendaryCounter}"
+                        )
+                        intent.putExtra("popupbtn", "OK")
+                        startActivity(intent)
+                    }
+                }
         }
-
-        photo.setOnClickListener{
-            photo.visibility = View.INVISIBLE
-            resultKaban.visibility = View.INVISIBLE
-            gift.visibility = View.VISIBLE
-            getKaban.visibility = View.VISIBLE
-            statsButton.visibility = View.VISIBLE
-        }
-
-        statsButton.setOnClickListener {
-            val intent = Intent(this, popupStatistics::class.java)
-            intent.putExtra("popuptitle", "Статистика")
-            intent.putExtra("popuptext", "Ваша статистика:\nОбычных карт: ${commonCounter}" +
-                    "\nРедких : ${rareCounter}\nЭпичных карт: ${epicCounter}\n" +
-                    "ЛЕГЕНДАРНЫХ карт: ${legendaryCounter}")
-            intent.putExtra("popupbtn", "OK")
-            startActivity(intent)
-        }
-
     }
-
 }
