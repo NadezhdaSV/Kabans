@@ -5,6 +5,7 @@ package com.example.kabans
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +18,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var database: DatabaseReference
 
     lateinit var bindClass : ActivityMainBinding
 
@@ -94,25 +94,20 @@ class MainActivity : AppCompatActivity() {
             return imagesWithRarityAmount
         }
 
-//        val commonImagesAmount = readDataRarity("common")
-//        val rareImagesAmount = readDataRarity("rare")
-//        val epicImagesAmount = readDataRarity("epic")
-//        val legendaryImagesAmount = readDataRarity("legendary")
-
-        val commonImagesAmount = firebaseRemoteConfig.getString("common_count")
-        val rareImagesAmount = getImageWithRarity("rare")
-        val epicImagesAmount = getImageWithRarity("epic")
-        val legendaryImagesAmount = getImageWithRarity("legendary")
-
         firebaseRemoteConfig.fetchAndActivate()
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     gift.setOnClickListener {
 
+                        val commonImagesAmount = firebaseRemoteConfig.getString("common_counter")
+                        val rareImagesAmount = getImageWithRarity("rare")
+                        val epicImagesAmount = getImageWithRarity("epic")
+                        val legendaryImagesAmount = getImageWithRarity("legendary")
+
                         val rarity = getRarity()
                         when (rarity) {
                             "common" -> {
-                                val randNumber = (1..13).random()
+                                val randNumber = (1..commonImagesAmount.toInt()).random()
                                 val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
                                 Glide.with(this)
                                     .load(cardUrl)
@@ -122,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             "rare" -> {
-                                val randNumber = (1..13).random()
+                                val randNumber = (1..commonImagesAmount.toInt()).random()
                                 val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
                                 Glide.with(this)
                                     .load(cardUrl)
@@ -132,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             "epic" -> {
-                                val randNumber = (1..13).random()
+                                val randNumber = (1..commonImagesAmount.toInt()).random()
                                 val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
                                 Glide.with(this)
                                     .load(cardUrl)
@@ -142,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             "legendary" -> {
-                                val randNumber = (1..13).random()
+                                val randNumber = (1..commonImagesAmount.toInt()).random()
                                 val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
                                 Glide.with(this)
                                     .load(cardUrl)
