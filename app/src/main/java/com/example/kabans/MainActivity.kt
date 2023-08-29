@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                                     .load(cardUrl)
                                     .into(photo)
                                 commonCounter += 1
-                                text = "Вы получили обычную карту!"
+                                text = "Вы получили обычную карту! Всего ${commonCounter} из ${commonImagesAmount} обычных карт"
                             }
 
                             "rare" -> {
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
                                     .load(cardUrl)
                                     .into(photo)
                                 rareCounter += 1
-                                text = "Вы получили редкую карту!"
+                                text = "Вы получили редкую карту! Всего ${rareCounter} из ${rareImagesAmount} редких карт"
                             }
 
                             "epic" -> {
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                                     .load(cardUrl)
                                     .into(photo)
                                 epicCounter += 1
-                                text = "Вы получили эпическую карту!"
+                                text = "Вы получили эпическую карту! Существует только одна такая"
                             }
 
                             "legendary" -> {
@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                                     .load(cardUrl)
                                     .into(photo)
                                 legendaryCounter += 1
-                                text = "Вы получили ЛЕГЕНДАРНУЮ карту!!!"
+                                text = "Вы получили ЛЕГЕНДАРНУЮ карту!!! Ты нашел единственную легендарную карту!"
                             }
                         }
 
