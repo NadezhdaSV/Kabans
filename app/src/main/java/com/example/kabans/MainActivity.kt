@@ -5,14 +5,11 @@ package com.example.kabans
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.bumptech.glide.Glide
 import com.example.kabans.databinding.ActivityMainBinding
-import com.google.firebase.database.*
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 
@@ -60,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             for(rarity in rarities) {
                 cumulativeProbability += rarity.probability
                 if (p <= cumulativeProbability) {
-                    name = rarity.name;
+                    name = rarity.name
                     break
                 }
             }
@@ -100,9 +97,9 @@ class MainActivity : AppCompatActivity() {
                     gift.setOnClickListener {
 
                         val commonImagesAmount = firebaseRemoteConfig.getString("common_counter")
-                        val rareImagesAmount = getImageWithRarity("rare")
-                        val epicImagesAmount = getImageWithRarity("epic")
-                        val legendaryImagesAmount = getImageWithRarity("legendary")
+                        val rareImagesAmount = firebaseRemoteConfig.getString("rare_counter")
+                        val epicImagesAmount = firebaseRemoteConfig.getString("epic_counter")
+                        val legendaryImagesAmount = firebaseRemoteConfig.getString("legendary_counter")
 
                         val rarity = getRarity()
                         when (rarity) {
@@ -117,33 +114,33 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             "rare" -> {
-                                val randNumber = (1..commonImagesAmount.toInt()).random()
-                                val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
+                                val randNumber = (1..rareImagesAmount.toInt()).random()
+                                val cardUrl = firebaseRemoteConfig.getString("rare_${randNumber}")
                                 Glide.with(this)
                                     .load(cardUrl)
                                     .into(photo)
-                                commonCounter += 1
-                                text = "Вы получили обычную карту!"
+                                rareCounter += 1
+                                text = "Вы получили редкую карту!"
                             }
 
                             "epic" -> {
-                                val randNumber = (1..commonImagesAmount.toInt()).random()
-                                val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
+                                val randNumber = (1..epicImagesAmount.toInt()).random()
+                                val cardUrl = firebaseRemoteConfig.getString("epic_${randNumber}")
                                 Glide.with(this)
                                     .load(cardUrl)
                                     .into(photo)
-                                commonCounter += 1
-                                text = "Вы получили обычную карту!"
+                                epicCounter += 1
+                                text = "Вы получили эпическую карту!"
                             }
 
                             "legendary" -> {
-                                val randNumber = (1..commonImagesAmount.toInt()).random()
-                                val cardUrl = firebaseRemoteConfig.getString("common_${randNumber}")
+                                val randNumber = (1..legendaryImagesAmount.toInt()).random()
+                                val cardUrl = firebaseRemoteConfig.getString("legendary_${randNumber}")
                                 Glide.with(this)
                                     .load(cardUrl)
                                     .into(photo)
-                                commonCounter += 1
-                                text = "Вы получили обычную карту!"
+                                legendaryCounter += 1
+                                text = "Вы получили ЛЕГЕНДАРНУЮ карту!!!"
                             }
                         }
 
